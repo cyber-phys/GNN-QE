@@ -28,19 +28,14 @@ visualize them to better understand the multi-hop reasoning process.
 ## Installation ##
 
 The dependencies can be installed via either conda or pip. GNN-QE is compatible
-with Python 3.7/3.8/3.9 and PyTorch >= 1.8.0.
-
-### From Conda ###
-
-```bash
-conda install torchdrug pytorch cudatoolkit -c milagraph -c pytorch -c pyg
-conda install easydict pyyaml -c conda-forge
-```
+with Python 3.10 and PyTorch = 2.0
 
 ### From Pip ###
 
 ```bash
-pip install torchdrug torch
+pip install torch==2.0 --index-url https://download.pytorch.org/whl/cu118
+pip install torch-scatter torch-cluster -f https://data.pyg.org/whl/torch-2.0.0+cu118.html
+pip install torchdrug
 pip install easydict pyyaml
 ```
 
@@ -62,7 +57,8 @@ to fit a smaller GPU memory. All the configuration files can be found in
 To run GNN-QE with multiple GPUs or multiple machines, use the following commands
 
 ```bash
-python -m torch.distributed.launch --nproc_per_node=4 script/run.py -c config/fb15k237.yaml --gpus [0,1,2,3]
+export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128
+python -m torch.distributed.launch --nproc_per_node=2 script/run.py -c config/fb15k237.yaml --gpus [0,1]
 ```
 
 ```bash
