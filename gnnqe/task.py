@@ -8,6 +8,9 @@ from torchdrug import core, tasks, metrics
 from torchdrug.layers import functional
 from torchdrug.core import Registry as R
 
+def size_to_index(sizes):
+    # Convert the sizes to indices by cumulatively summing them and then shifting right
+    return torch.cumsum(sizes, dim=0) - sizes
 
 @R.register("task.LogicalQuery")
 class LogicalQuery(tasks.Task, core.Configurable):
@@ -114,7 +117,7 @@ class LogicalQuery(tasks.Task, core.Configurable):
         num_easy = easy_answer.sum(dim=-1)
         num_hard = hard_answer.sum(dim=-1)
         num_answer = num_easy + num_hard
-        answer2query = functional._size_to_index(num_answer)
+        answer2query = size_to_index(num_answer)
         order = pred.argsort(dim=-1, descending=True)
         range = torch.arange(self.num_entity, device=self.device)
         ranking = scatter_add(range.expand_as(order), order, dim=-1)
